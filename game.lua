@@ -5,9 +5,11 @@ local scene = composer.newScene()
 local score = 0
 local lives = 3
 local baseSpeed = 70
+local baseTimeToSpawn = 5000
 local enemyCars = {}
 
-local liveText = display.newText( "Lives: " .. lives, display.contentCenterX, 20, native.systemFont, 20 )
+
+local liveText = display.newText( "Lives: " .. lives, display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20 )
 local userCar = display.newRect( display.contentCenterX, display.contentHeight - 50, 50, 100 )
 local rightButton = display.newRect( display.contentWidth - 50, display.contentHeight - 50, 80, 80 )
 local leftButton = display.newRect( 50, display.contentHeight - 50, 80, 80 )
@@ -17,8 +19,8 @@ function moveEnemyCar(event)
     local lanes = {display.contentWidth * 0.25, display.contentWidth * 0.5, display.contentWidth * 0.75}
     local laneIndex = math.random(1, 3)
     local enemyX = lanes[laneIndex]
-    local enemyCar = display.newRect( enemyX, -50, 50, 100 )
-    physics.addBody( enemyCar, "dynamic")
+    local enemyCar = display.newRect( enemyX, -50, 50, 80 )
+    physics.addBody( enemyCar, "dynamic", { isSensor=true } )
     enemyCar:setLinearVelocity(0, baseSpeed)
     table.insert(enemyCars, enemyCar)
     return enemyCar
@@ -40,17 +42,17 @@ function moveUserCarLeft(event)
     end
 end
 
-function collisionListener( self, event )
-    if ( event.phase == "began" ) then
-        if ( event.other == enemyCar ) then
+local function onCollision(event)
+    if event.phase == "began" then
+        if lives > 1 then
             lives = lives - 1
             liveText.text = "Lives: " .. lives
-            if lives <= 0 then
-                composer.gotoScene( "menu" )
-            end
+        elseif lives == 1 then
+            composer.gotoScene("defeat")
         end
     end
 end
+
 
 function scene:create( event )
     local sceneGroup = self.view
@@ -58,14 +60,15 @@ function scene:create( event )
     physics.start()
     physics.setGravity(0,0)
 
+    physics.addBody( userCar, "dynamic", { isSensor=true } )
+
     sceneGroup:insert( userCar )
     sceneGroup:insert( rightButton )
     sceneGroup:insert( leftButton )
-    userCar.collision = collisionListener
-    userCar:addEventListener( "collision" )
+    userCar:addEventListener( "collision", onCollision )
     sceneGroup:insert( liveText )
 
-    timer.performWithDelay(5000, function()
+    timer.performWithDelay(baseTimeToSpawn, function()
         local newCar = moveEnemyCar()
         sceneGroup:insert(newCar)
     end, 0)
