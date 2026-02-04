@@ -28,6 +28,8 @@ function moveEnemyCar(event)
     return enemyCar
 end
 
+
+
 function moveUserCarRight(event)
     if userCar.x == display.contentWidth * 0.25 then
         userCar.x = display.contentWidth * 0.5
@@ -54,6 +56,8 @@ local function onCollision(event)
         end
     end
 end
+
+
 
 local function scoreUp(event)
     if event.phase == "began" then
