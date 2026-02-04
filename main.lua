@@ -13,4 +13,3 @@ display.setStatusBar( display.HiddenStatusBar )
 math.randomseed( os.time() )
 
 composer.gotoScene( "menu" )
-je kanker moeder
