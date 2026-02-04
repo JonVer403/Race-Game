@@ -8,7 +8,8 @@ local baseSpeed = 70
 local baseTimeToSpawn = 5000
 local enemyCars = {}
 
-
+local borderBottom = display.newRect( display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20 )
+local scoreText = display.newText( "Score: " .. score, display.contentCenterX, 50, native.systemFont, 20 )
 local liveText = display.newText( "Lives: " .. lives, display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20 )
 local userCar = display.newRect( display.contentCenterX, display.contentHeight - 50, 50, 100 )
 local rightButton = display.newRect( display.contentWidth - 50, display.contentHeight - 50, 80, 80 )
@@ -23,6 +24,7 @@ function moveEnemyCar(event)
     physics.addBody( enemyCar, "dynamic", { isSensor=true } )
     enemyCar:setLinearVelocity(0, baseSpeed)
     table.insert(enemyCars, enemyCar)
+    
     return enemyCar
 end
 
@@ -53,6 +55,13 @@ local function onCollision(event)
     end
 end
 
+local function scoreUp(event)
+    if event.phase == "began" then
+        score = score + 1
+        scoreText.text = "Score: " .. score
+    end
+end
+
 
 function scene:create( event )
     local sceneGroup = self.view
@@ -61,12 +70,15 @@ function scene:create( event )
     physics.setGravity(0,0)
 
     physics.addBody( userCar, "dynamic", { isSensor=true } )
+    physics.addBody( borderBottom, "static", { isSensor=true } )
 
     sceneGroup:insert( userCar )
     sceneGroup:insert( rightButton )
     sceneGroup:insert( leftButton )
     userCar:addEventListener( "collision", onCollision )
+    borderBottom:addEventListener( "collision", scoreUp )
     sceneGroup:insert( liveText )
+    sceneGroup:insert( scoreText )
 
     timer.performWithDelay(baseTimeToSpawn, function()
         local newCar = moveEnemyCar()
