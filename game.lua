@@ -13,6 +13,8 @@ local image = display.newImageRect( "Background/Kunst.jpg",
 image.x = display.contentCenterX
 image.y = display.contentCenterY
 
+local borderBottom = display.newRect( display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20 )
+local scoreText = display.newText( "Score: " .. score, display.contentCenterX, 50, native.systemFont, 20 )
 local liveText = display.newText( "Lives: " .. lives, display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20 )
 local userCar = display.newRect( display.contentCenterX, display.contentHeight - 50, 50, 100 )
 local rightButton = display.newRect( display.contentWidth - 50, display.contentHeight - 50, 80, 80 )
