@@ -8,17 +8,24 @@ local function gotogame()
     composer.gotoScene( "game" )
 end
 
+local function gotohighscores()
+    composer.removeScene( "Highscores" )
+    composer.gotoScene( "Highscores" )
+end
+
 
 
 function scene:create( event )
     local sceneGroup = self.view
 
     local gamebutton = display.newText( sceneGroup, "Game", display.contentCenterX, display.contentCenterY - 66, native.systemFont, 30 )
-	
+    local highscorebutton = display.newText( sceneGroup, "High Scores", display.contentCenterX, display.contentCenterY, native.systemFont, 30 )
+
     sceneGroup:insert( gamebutton )
+    sceneGroup:insert( highscorebutton )
 	
     gamebutton:addEventListener( "tap", gotogame )
-    
+    highscorebutton:addEventListener( "tap", gotohighscores )
     
 
 end

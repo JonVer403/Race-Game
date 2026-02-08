@@ -1,46 +1,48 @@
-local composer = require( "composer" )
+local composer = require("composer")
 local physics = require("physics")
 local scene = composer.newScene()
-local json = require("json")
 
-local filePath = system.pathForFile("highscore.json", system.DocumentsDirectory)
-
+-- GAME VARIABLES
 local score = 0
 local lives = 3
-local baseSpeed = 70
+local baseSpeed = 100
 local Speed = baseSpeed
-local baseTimeToSpawn = 5000
+local baseTimeToSpawn = 4000
 local enemySpawnTime = baseTimeToSpawn
+
 local enemyCars = {}
 local spawnTimer = nil
+local lastSpawn = 0 -- IMPORTANT: used for dynamic spawn timing
 
-local image = display.newImageRect( "Background/Kunst.jpg",
-               display.contentWidth, display.contentHeight) 
-image.x = display.contentCenterX
-image.y = display.contentCenterY
+-- DISPLAY OBJECTS (declared here, created later)
+local borderBottom, scoreText, liveText
+local userCar, rightButton, leftButton
 
-local borderBottom = display.newRect( display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20 )
-local scoreText = display.newText( "Score: " .. score, display.contentCenterX, 50, native.systemFont, 20 )
-local liveText = display.newText( "Lives: " .. lives, display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20 )
-local userCar = display.newRect( display.contentCenterX, display.contentHeight - 50, 50, 100 )
-local rightButton = display.newRect( display.contentWidth - 50, display.contentHeight - 50, 80, 80 )
-local leftButton = display.newRect( 50, display.contentHeight - 50, 80, 80 )
+----------------------------------------------------------
+-- ENEMY SPAWNING
+----------------------------------------------------------
+local function moveEnemyCar()
+    local lanes = {
+        display.contentWidth * 0.25,
+        display.contentWidth * 0.5,
+        display.contentWidth * 0.75
+    }
 
-
-function moveEnemyCar()
-    local lanes = {display.contentWidth * 0.25, display.contentWidth * 0.5, display.contentWidth * 0.75}
     local laneIndex = math.random(1, 3)
     local enemyX = lanes[laneIndex]
 
     local enemyCar = display.newRect(enemyX, -50, 50, 80)
-    physics.addBody(enemyCar, "dynamic", { isSensor=true })
+    physics.addBody(enemyCar, "dynamic", { isSensor = true })
     enemyCar:setLinearVelocity(0, Speed)
 
     table.insert(enemyCars, enemyCar)
+    scene.view:insert(enemyCar)
 end
 
-
-function moveUserCarRight(event)
+----------------------------------------------------------
+-- PLAYER MOVEMENT
+----------------------------------------------------------
+local function moveUserCarRight()
     if userCar.x == display.contentWidth * 0.25 then
         userCar.x = display.contentWidth * 0.5
     elseif userCar.x == display.contentWidth * 0.5 then
@@ -48,7 +50,7 @@ function moveUserCarRight(event)
     end
 end
 
-function moveUserCarLeft(event)
+local function moveUserCarLeft()
     if userCar.x == display.contentWidth * 0.75 then
         userCar.x = display.contentWidth * 0.5
     elseif userCar.x == display.contentWidth * 0.5 then
@@ -56,133 +58,142 @@ function moveUserCarLeft(event)
     end
 end
 
+----------------------------------------------------------
+-- COLLISION HANDLING
+----------------------------------------------------------
 local function onCollision(event)
-
-    if (event.phase == "began") then
+    if event.phase == "began" then
 
         if lives > 1 then
             lives = lives - 1
             liveText.text = "Lives: " .. lives
-        elseif lives == 1 then
+        else
+            composer.setVariable("finalScore", score)
+            composer.removeScene("defeat")
             composer.gotoScene("defeat")
         end
 
+        -- Remove the enemy that hit the player
         if event.other then
             for i = #enemyCars, 1, -1 do
-                if (event.other == enemyCars[i]) then
+                if event.other == enemyCars[i] then
                     display.remove(enemyCars[i])
                     table.remove(enemyCars, i)
-                    return
+                    break
                 end
             end
         end
-        
     end
 end
 
-
-
+----------------------------------------------------------
+-- SCORE UP
+----------------------------------------------------------
 local function scoreUp(event)
     if event.phase == "began" then
         score = score + 1
         scoreText.text = "Score: " .. score
-        if score < 60 then
-            Speed = math.min(baseSpeed + (score * 8), 250)
-            enemySpawnTime = math.max(1000, baseTimeToSpawn - (score * 400))
-        else
-            Speed = 300
-            enemySpawnTime = 800
-        end
-        if spawnTimer then
-            timer.cancel(spawnTimer)
-        end
 
-        spawnTimer = timer.performWithDelay(enemySpawnTime, moveEnemyCar, 0)
-
+        -- Update speed and spawn rate
+        if score < 40 then
+            Speed = math.min(baseSpeed + (score * 8), 230)
+            enemySpawnTime = math.max(1000, baseTimeToSpawn - (score * 200))
+        elseif score < 100 and score >= 40 then
+            Speed = 350
+            enemySpawnTime = 700
+        elseif score < 150 and score >= 100 then
+            Speed = 430
+            enemySpawnTime = 500
+        elseif score >= 150 then
+            Speed = 550
+            enemySpawnTime = 300
+        end
     end
 end
 
-
-
-function scene:create( event )
+----------------------------------------------------------
+-- SCENE CREATE
+----------------------------------------------------------
+function scene:create(event)
     local sceneGroup = self.view
-sceneGroup:insert( borderBottom )
-sceneGroup:insert( scoreText )
-
-    local image = display.newImageRect( "Background/Kunst.jpg",
-               display.contentWidth, display.contentHeight) 
-image.x = display.contentCenterX
-image.y = display.contentCenterY
-
-
-    spawnTimer = timer.performWithDelay(enemySpawnTime, moveEnemyCar, 0)
 
     physics.start()
-    physics.setGravity(0,0)
+    physics.setGravity(0, 0)
 
-    physics.addBody( userCar, "dynamic", { isSensor=true } )
-    physics.addBody( borderBottom, "static", { isSensor=true } )
+    -- CREATE OBJECTS INSIDE THE SCENE
+    borderBottom = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20)
+    scoreText = display.newText(sceneGroup, "Score: 0", display.contentCenterX, 50, native.systemFont, 20)
+    liveText = display.newText(sceneGroup, "Lives: 3", display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20)
 
-    sceneGroup:insert( userCar )
-    sceneGroup:insert( rightButton )
-    sceneGroup:insert( leftButton )
-    sceneGroup:insert( borderBottom )
-    sceneGroup:insert( liveText )
-    sceneGroup:insert( scoreText )
+    userCar = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight - 50, 50, 100)
+    rightButton = display.newRect(sceneGroup, display.contentWidth - 50, display.contentHeight - 50, 80, 80)
+    leftButton = display.newRect(sceneGroup, 50, display.contentHeight - 50, 80, 80)
 
-    userCar:addEventListener( "collision", onCollision )
-    borderBottom:addEventListener( "collision", scoreUp )
+    physics.addBody(userCar, "dynamic", { isSensor = true })
+    physics.addBody(borderBottom, "static", { isSensor = true })
+
+    -- EVENT LISTENERS
+    userCar:addEventListener("collision", onCollision)
+    borderBottom:addEventListener("collision", scoreUp)
     rightButton:addEventListener("tap", moveUserCarRight)
     leftButton:addEventListener("tap", moveUserCarLeft)
 end
 
-function scene:show( event )
-    local phase = event.phase
-    
-    if ( phase == "will" ) then
-        -- Reset variables
+----------------------------------------------------------
+-- SCENE SHOW
+----------------------------------------------------------
+function scene:show(event)
+    if event.phase == "will" then
+        -- Reset game state
         score = 0
         lives = 3
         Speed = baseSpeed
         enemySpawnTime = baseTimeToSpawn
+        lastSpawn = system.getTimer()
+
         scoreText.text = "Score: 0"
         liveText.text = "Lives: 3"
-        
+
+    elseif event.phase == "did" then
+        -- Start dynamic spawn timer
+        spawnTimer = timer.performWithDelay(30, function()
+            local now = system.getTimer()
+
+            if now - lastSpawn >= enemySpawnTime then
+                lastSpawn = now
+                moveEnemyCar()
+            end
+        end, 0)
     end
 end
 
-function scene:hide( event )
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if ( phase == "will" ) then
-        -- This runs when the scene is about to be removed (e.g., going to 'defeat')
-        
-        -- 1. Cancel the spawn timer
+----------------------------------------------------------
+-- SCENE HIDE
+----------------------------------------------------------
+function scene:hide(event)
+    if event.phase == "will" then
         if spawnTimer then
             timer.cancel(spawnTimer)
             spawnTimer = nil
         end
-        
-        -- 2. Optional: Stop the physics engine if you want to freeze everything
-        -- physics.pause() 
     end
 end
 
-function scene:destroy( event )
-    local sceneGroup = self.view
+----------------------------------------------------------
+-- SCENE DESTROY
+----------------------------------------------------------
+function scene:destroy(event)
     if spawnTimer then
         timer.cancel(spawnTimer)
         spawnTimer = nil
     end
-    physics.stop()
 
+    physics.stop()
 end
 
--- Scene event function listeners
-scene:addEventListener( "create", scene )
-scene:addEventListener( "show", scene )
-scene:addEventListener( "hide", scene )
-scene:addEventListener( "destroy", scene )
+scene:addEventListener("create", scene)
+scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
+scene:addEventListener("destroy", scene)
 
 return scene
