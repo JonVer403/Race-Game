@@ -14,6 +14,10 @@ local enemySpawnTime = baseTimeToSpawn
 local enemyCars = {}
 local spawnTimer = nil
 
+local image = display.newImageRect( "Background/Kunst.jpg",
+               display.contentWidth, display.contentHeight) 
+image.x = display.contentCenterX
+image.y = display.contentCenterY
 
 local borderBottom = display.newRect( display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20 )
 local scoreText = display.newText( "Score: " .. score, display.contentCenterX, 50, native.systemFont, 20 )
@@ -102,6 +106,13 @@ end
 
 function scene:create( event )
     local sceneGroup = self.view
+sceneGroup:insert( borderBottom )
+sceneGroup:insert( scoreText )
+
+    local image = display.newImageRect( "Background/Kunst.jpg",
+               display.contentWidth, display.contentHeight) 
+image.x = display.contentCenterX
+image.y = display.contentCenterY
 
 
     spawnTimer = timer.performWithDelay(enemySpawnTime, moveEnemyCar, 0)
