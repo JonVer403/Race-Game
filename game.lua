@@ -12,15 +12,13 @@ local enemySpawnTime = baseTimeToSpawn
 
 local enemyCars = {}
 local spawnTimer = nil
-local lastSpawn = 0 -- IMPORTANT: used for dynamic spawn timing
+local lastSpawn = 0 
 
--- DISPLAY OBJECTS (declared here, created later)
+
 local borderBottom, scoreText, liveText
 local userCar, rightButton, leftButton
 
-----------------------------------------------------------
--- ENEMY SPAWNING
-----------------------------------------------------------
+
 local function moveEnemyCar()
     local lanes = {
         display.contentWidth * 0.25,
@@ -39,9 +37,7 @@ local function moveEnemyCar()
     scene.view:insert(enemyCar)
 end
 
-----------------------------------------------------------
--- PLAYER MOVEMENT
-----------------------------------------------------------
+
 local function moveUserCarRight()
     if userCar.x == display.contentWidth * 0.25 then
         userCar.x = display.contentWidth * 0.5
@@ -58,9 +54,7 @@ local function moveUserCarLeft()
     end
 end
 
-----------------------------------------------------------
--- COLLISION HANDLING
-----------------------------------------------------------
+
 local function onCollision(event)
     if event.phase == "began" then
 
@@ -73,7 +67,7 @@ local function onCollision(event)
             composer.gotoScene("defeat")
         end
 
-        -- Remove the enemy that hit the player
+        
         if event.other then
             for i = #enemyCars, 1, -1 do
                 if event.other == enemyCars[i] then
@@ -86,15 +80,13 @@ local function onCollision(event)
     end
 end
 
-----------------------------------------------------------
--- SCORE UP
-----------------------------------------------------------
+
 local function scoreUp(event)
     if event.phase == "began" then
         score = score + 1
         scoreText.text = "Score: " .. score
 
-        -- Update speed and spawn rate
+       
         if score < 40 then
             Speed = math.min(baseSpeed + (score * 8), 230)
             enemySpawnTime = math.max(1000, baseTimeToSpawn - (score * 200))
@@ -111,40 +103,54 @@ local function scoreUp(event)
     end
 end
 
-----------------------------------------------------------
--- SCENE CREATE
-----------------------------------------------------------
+
 function scene:create(event)
     local sceneGroup = self.view
 
     physics.start()
     physics.setGravity(0, 0)
 
-    -- CREATE OBJECTS INSIDE THE SCENE
+    laneLinesL = display.newRect(sceneGroup, display.contentWidth * 0.15, display.contentCenterY, 5, 3000)
+    laneLinesL:setFillColor(255, 191, 0)
+    laneLinesR = display.newRect(sceneGroup, display.contentWidth * 0.85, display.contentCenterY, 5, 3000)
+    laneLinesR:setFillColor(255, 191, 0)
+
+    laneLinesMR = display.newRect(sceneGroup, display.contentWidth * 0.625, display.contentCenterY, 2, 3000)
+    laneLinesML = display.newRect(sceneGroup, display.contentWidth * 0.375, display.contentCenterY, 2, 3000)
+   
+
+
     borderBottom = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight + 200, display.contentWidth, 20)
     scoreText = display.newText(sceneGroup, "Score: 0", display.contentCenterX, 50, native.systemFont, 20)
+    scoreText:setFillColor(255, 0, 0)
+
     liveText = display.newText(sceneGroup, "Lives: 3", display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20)
 
     userCar = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight - 50, 50, 100)
-    rightButton = display.newRect(sceneGroup, display.contentWidth - 50, display.contentHeight - 50, 80, 80)
-    leftButton = display.newRect(sceneGroup, 50, display.contentHeight - 50, 80, 80)
+    rightButton = display.newRect(sceneGroup, display.contentWidth, display.contentCenterY, 200, 3000)
+    rightButton:setFillColor(0.2, 0.2, 0.8, 0.01)
+    leftButton = display.newRect(sceneGroup, 0, display.contentCenterY, 200, 3000)
+    leftButton:setFillColor(0.2, 0.2, 0.8, 0.01)
+
+    GreeneryR = display.newRect(sceneGroup, display.contentWidth, display.contentCenterY, 80, 3000)
+    GreeneryR:setFillColor(0.2, 0.8, 0.2)
+    GreeneryL = display.newRect(sceneGroup, 0, display.contentCenterY, 80, 3000)
+    GreeneryL:setFillColor(0.2, 0.8, 0.2)
 
     physics.addBody(userCar, "dynamic", { isSensor = true })
     physics.addBody(borderBottom, "static", { isSensor = true })
 
-    -- EVENT LISTENERS
+    
     userCar:addEventListener("collision", onCollision)
     borderBottom:addEventListener("collision", scoreUp)
     rightButton:addEventListener("tap", moveUserCarRight)
     leftButton:addEventListener("tap", moveUserCarLeft)
 end
 
-----------------------------------------------------------
--- SCENE SHOW
-----------------------------------------------------------
+
 function scene:show(event)
     if event.phase == "will" then
-        -- Reset game state
+        
         score = 0
         lives = 3
         Speed = baseSpeed
@@ -155,7 +161,7 @@ function scene:show(event)
         liveText.text = "Lives: 3"
 
     elseif event.phase == "did" then
-        -- Start dynamic spawn timer
+        
         spawnTimer = timer.performWithDelay(30, function()
             local now = system.getTimer()
 
@@ -167,9 +173,7 @@ function scene:show(event)
     end
 end
 
-----------------------------------------------------------
--- SCENE HIDE
-----------------------------------------------------------
+
 function scene:hide(event)
     if event.phase == "will" then
         if spawnTimer then
@@ -179,9 +183,7 @@ function scene:hide(event)
     end
 end
 
-----------------------------------------------------------
--- SCENE DESTROY
-----------------------------------------------------------
+
 function scene:destroy(event)
     if spawnTimer then
         timer.cancel(spawnTimer)
