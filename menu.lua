@@ -31,9 +31,14 @@ function scene:create( event )
     GreeneryL = display.newRect(sceneGroup, 0, display.contentCenterY, 80, 3000)
     GreeneryL:setFillColor(0.2, 0.8, 0.2)
 
-    local gamebutton = display.newText( sceneGroup, "Game", display.contentCenterX, display.contentCenterY - 66, native.systemFont, 50 )
-    gamebutton:setFillColor( 0, 0, 1 )
-    local highscorebutton = display.newText( sceneGroup, "High Scores", display.contentCenterX, display.contentCenterY, native.systemFont, 30 )
+    local gameTitle = display.newText( sceneGroup, "Car Game", display.contentCenterX, display.contentCenterY - 150, native.systemFont, 65 )
+    local gamebutton = display.newText( sceneGroup, "Play", display.contentCenterX, display.contentCenterY , native.systemFont, 50 )
+    gamebutton:setFillColor( 1, 0, 0 )
+    local highscorebutton = display.newText( sceneGroup, "High Scores", display.contentCenterX, display.contentCenterY + 66, native.systemFont, 30 )
+
+    userCar = display.newImageRect(sceneGroup, "Auto foto's/UserCar.png", 55, 100)
+    userCar.x = display.contentWidth * 0.5
+    userCar.y = display.contentHeight - 50
 
     sceneGroup:insert( gamebutton )
     sceneGroup:insert( highscorebutton )

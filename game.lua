@@ -7,7 +7,7 @@ local score = 0
 local lives = 3
 local baseSpeed = 100
 local Speed = baseSpeed
-local baseTimeToSpawn = 4000
+local baseTimeToSpawn = 3500
 local enemySpawnTime = baseTimeToSpawn
 
 local enemyCars = {}
@@ -90,8 +90,8 @@ local function scoreUp(event)
 
        
         if score < 40 then
-            Speed = math.min(baseSpeed + (score * 8), 230)
-            enemySpawnTime = math.max(1000, baseTimeToSpawn - (score * 200))
+            Speed = math.min(baseSpeed + (score * 8), 215)
+            enemySpawnTime = math.max(1000, baseTimeToSpawn - (score * 160))
         elseif score < 100 and score >= 40 then
             Speed = 350
             enemySpawnTime = 700
@@ -99,8 +99,8 @@ local function scoreUp(event)
             Speed = 430
             enemySpawnTime = 550
         elseif score >= 150 then
-            Speed = 550
-            enemySpawnTime = 300
+            Speed = 500
+            enemySpawnTime = 400
         end
     end
 end
