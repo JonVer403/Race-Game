@@ -44,7 +44,7 @@ function scene:create( event )
 
     loadScores()
 
-    table.insert(scoresTable, composer.getVariable("finallScore"))
+    table.insert(scoresTable, composer.getVariable("finalScore"))
 
     local function compare(a, b)
         return a > b

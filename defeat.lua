@@ -9,19 +9,6 @@ local score = composer.getVariable("finalScore")
 
 
 
-local defaultField
- 
-local function textListener( event )
- 
-    if ( event.phase == "began" ) then
- 
-    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-        print( "Text entered: " .. event.target.text )
-		composer.setVariable("scoreName", event.target.text .. " - " .. score)
-    end
-end
-
-
 local function gotomenu()
 	composer.removeScene( "menu" )
 	composer.gotoScene( "menu" )
@@ -39,8 +26,6 @@ function scene:create( event )
 	local menuButton = display.newText(sceneGroup, "Menu", display.contentCenterX, 20, native.systemFont, 30)
 	local scoreText = display.newText(sceneGroup, "Your Score: " .. score, display.contentCenterX, display.contentCenterY, native.systemFont, 40)
 
-	local defaultField = native.newTextField( 150, 150, 180, 30 )
-	defaultField:addEventListener( "userInput", textListener )
 
 	sceneGroup:insert(highscoreButton)
 	sceneGroup:insert(defaultField)
