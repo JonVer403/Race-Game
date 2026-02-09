@@ -31,7 +31,8 @@ function scene:create( event )
     GreeneryL = display.newRect(sceneGroup, 0, display.contentCenterY, 80, 3000)
     GreeneryL:setFillColor(0.2, 0.8, 0.2)
 
-    local gamebutton = display.newText( sceneGroup, "Game", display.contentCenterX, display.contentCenterY - 66, native.systemFont, 30 )
+    local gamebutton = display.newText( sceneGroup, "Game", display.contentCenterX, display.contentCenterY - 66, native.systemFont, 50 )
+    gamebutton:setFillColor( 0, 0, 1 )
     local highscorebutton = display.newText( sceneGroup, "High Scores", display.contentCenterX, display.contentCenterY, native.systemFont, 30 )
 
     sceneGroup:insert( gamebutton )

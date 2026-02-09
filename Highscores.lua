@@ -31,18 +31,18 @@ local function saveScores()
     io.close(file)
 end
 
-local function resetScores()
-    scoresTable = {0,0,0,0,0,0,0,0,0,0}
-    saveScores()
-    scene:destroy()
-    scene:create()
-    composer.removeScene("Highscores")
-    composer.gotoScene("Highscores")
-end
-
 local function gotomenu()
+    composer.setVariable("finalScore", 0)
     composer.removeScene( "menu" )
     composer.gotoScene( "menu" )
+end
+
+local function resetScore()
+    scoresTable = {0,0,0,0,0,0,0,0,0,0}
+    saveScores()
+    composer.setVariable("finalScore", 0)
+    composer.removeScene( "Highscores" )
+    composer.gotoScene( "Highscores" )
 end
 
 function scene:create( event )
@@ -61,9 +61,9 @@ function scene:create( event )
     GreeneryL = display.newRect(sceneGroup, 0, display.contentCenterY, 80, 3000)
     GreeneryL:setFillColor(0.2, 0.8, 0.2)
 
-
-    local resetButton = display.newText(sceneGroup, "Reset Scores", display.contentCenterX, display.contentHeight + 20,  native.systemFont, 30)
-    resetButton:addEventListener("tap", resetScores)
+    local resetButton = display.newText(sceneGroup, "Reset Scores", display.contentCenterX, display.contentHeight + 20, native.systemFont, 30)
+    resetButton:addEventListener("tap", resetScore)
+    resetButton:setFillColor(1, 0, 0)
 
     local menuButton = display.newText(sceneGroup, "Menu", display.contentCenterX, 0, native.systemFont, 30)
     menuButton:addEventListener("tap", gotomenu)
@@ -81,7 +81,9 @@ function scene:create( event )
     saveScores()
 
     local highScoreHeader = display.newText(sceneGroup, "High Scores", display.contentCenterX, 50, native.systemFont, 40)
-    
+    highScoreHeader:setFillColor(0,0,1)
+
+
     for i = 1, 10 do
         if (scoresTable[i]) then
             local yPos = 70 + (i * 40)
