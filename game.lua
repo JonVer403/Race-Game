@@ -103,12 +103,21 @@ local function scoreUp(event)
     end
 end
 
+local function gotomenu()
+    composer.removeScene("menu")
+    composer.gotoScene("menu")
+end
+
+
 
 function scene:create(event)
     local sceneGroup = self.view
 
     physics.start()
     physics.setGravity(0, 0)
+
+    menuButton = display.newText(sceneGroup, "Menu", display.contentCenterX, 20, native.systemFont, 30)
+    menuButton:addEventListener("tap", gotomenu)
 
     laneLinesL = display.newRect(sceneGroup, display.contentWidth * 0.15, display.contentCenterY, 5, 3000)
     laneLinesL:setFillColor(255, 191, 0)
@@ -145,6 +154,7 @@ function scene:create(event)
     borderBottom:addEventListener("collision", scoreUp)
     rightButton:addEventListener("tap", moveUserCarRight)
     leftButton:addEventListener("tap", moveUserCarLeft)
+    menuButton:addEventListener("tap", gotomenu)
 end
 
 
