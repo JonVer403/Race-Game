@@ -97,7 +97,7 @@ local function scoreUp(event)
             enemySpawnTime = 700
         elseif score < 150 and score >= 100 then
             Speed = 430
-            enemySpawnTime = 500
+            enemySpawnTime = 550
         elseif score >= 150 then
             Speed = 550
             enemySpawnTime = 300

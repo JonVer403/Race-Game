@@ -31,6 +31,15 @@ local function saveScores()
     io.close(file)
 end
 
+local function resetScores()
+    scoresTable = {0,0,0,0,0,0,0,0,0,0}
+    saveScores()
+    scene:destroy()
+    scene:create()
+    composer.removeScene("Highscores")
+    composer.gotoScene("Highscores")
+end
+
 local function gotomenu()
     composer.removeScene( "menu" )
     composer.gotoScene( "menu" )
@@ -39,7 +48,24 @@ end
 function scene:create( event )
     local sceneGroup = self.view
 
-    local menuButton = display.newText(sceneGroup, "Menu", display.contentCenterX, 20, native.systemFont, 30)
+    laneLinesL = display.newRect(sceneGroup, display.contentWidth * 0.15, display.contentCenterY, 5, 3000)
+    laneLinesL:setFillColor(255, 191, 0)
+    laneLinesR = display.newRect(sceneGroup, display.contentWidth * 0.85, display.contentCenterY, 5, 3000)
+    laneLinesR:setFillColor(255, 191, 0)
+
+    laneLinesMR = display.newRect(sceneGroup, display.contentWidth * 0.625, display.contentCenterY, 2, 3000)
+    laneLinesML = display.newRect(sceneGroup, display.contentWidth * 0.375, display.contentCenterY, 2, 3000)
+    
+    GreeneryR = display.newRect(sceneGroup, display.contentWidth, display.contentCenterY, 80, 3000)
+    GreeneryR:setFillColor(0.2, 0.8, 0.2)
+    GreeneryL = display.newRect(sceneGroup, 0, display.contentCenterY, 80, 3000)
+    GreeneryL:setFillColor(0.2, 0.8, 0.2)
+
+
+    local resetButton = display.newText(sceneGroup, "Reset Scores", display.contentCenterX, display.contentHeight + 20,  native.systemFont, 30)
+    resetButton:addEventListener("tap", resetScores)
+
+    local menuButton = display.newText(sceneGroup, "Menu", display.contentCenterX, 0, native.systemFont, 30)
     menuButton:addEventListener("tap", gotomenu)
 
     loadScores()
@@ -58,7 +84,7 @@ function scene:create( event )
     
     for i = 1, 10 do
         if (scoresTable[i]) then
-            local yPos = 70 + (i * 56)
+            local yPos = 70 + (i * 40)
 
             local rankNum = display.newText(sceneGroup, i .. ") ", display.contentCenterX - 50, yPos, native.systemFont, 20)
             rankNum:setFillColor(0.8)
