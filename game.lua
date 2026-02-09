@@ -29,7 +29,9 @@ local function moveEnemyCar()
     local laneIndex = math.random(1, 3)
     local enemyX = lanes[laneIndex]
 
-    local enemyCar = display.newRect(enemyX, -50, 50, 80)
+    local enemyCar = display.newImageRect(scene.view, "Auto foto's/enemyCar.png", 58, 100)
+    enemyCar.x = enemyX
+    enemyCar.y = -50
     physics.addBody(enemyCar, "dynamic", { isSensor = true })
     enemyCar:setLinearVelocity(0, Speed)
 
@@ -133,9 +135,11 @@ function scene:create(event)
     scoreText = display.newText(sceneGroup, "Score: 0", display.contentCenterX, 50, native.systemFont, 20)
     scoreText:setFillColor(255, 0, 0)
 
-    liveText = display.newText(sceneGroup, "Lives: 3", display.contentCenterX, display.contentCenterY + 300, native.systemFont, 20)
+    liveText = display.newText(sceneGroup, "Lives: 3", display.contentCenterX, display.contentHeight + 20, native.systemFont, 20)
 
-    userCar = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight - 50, 50, 100)
+    userCar = display.newImageRect(sceneGroup, "Auto foto's/UserCar.png", 58, 110)
+    userCar.x = display.contentWidth * 0.5
+    userCar.y = display.contentHeight - 50
     rightButton = display.newRect(sceneGroup, display.contentWidth, display.contentCenterY, 200, 3000)
     rightButton:setFillColor(0.2, 0.2, 0.8, 0.01)
     leftButton = display.newRect(sceneGroup, 0, display.contentCenterY, 200, 3000)
