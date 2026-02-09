@@ -28,7 +28,6 @@ function scene:create( event )
 
 
 	sceneGroup:insert(highscoreButton)
-	sceneGroup:insert(defaultField)
     sceneGroup:insert(scoreText)
     sceneGroup:insert(menuButton)
 
